@@ -1,6 +1,6 @@
 'use client'
 
-import classes from "./sidebar.module.css"
+import classes from "./sidebar.module.scss"
 import {useFloor} from "@/contexts/FloorContext";
 
 const Sidebar = () => {
