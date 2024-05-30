@@ -2,70 +2,17 @@
 
 import 'leaflet/dist/leaflet.css'
 import {MapContainer, TileLayer, Polygon, Marker, Popup, Polyline} from 'react-leaflet';
-import {useEffect, useState} from "react";
-import {IParkingPlace} from "@/models/ParkingPlace";
 import {LatLngExpression} from "leaflet";
-import {useFloor} from "@/contexts/FloorContext";
-import {IShop} from "@/models/Shop";
 import {Icon} from 'leaflet'
-import {FacilityType, IFacility} from "@/models/Facility";
-import {IBorder} from "@/models/Border";
-import {IVoid} from "@/models/Void";
-import {IPlacement} from "@/models/Placement";
+import {FacilityType} from "@/models/Facility";
+import {useMapData} from "@/hooks/useMapData";
 
 
 const Map = () => {
 
     const initialPosition: [number, number] = [56.306470, 44.075805];
-    const [parkingPlaces, setParkingPlaces] = useState<IParkingPlace[]>([]);
-    const [shops, setShops] = useState<IShop[]>([]);
-    const [voids, setVoids] = useState<IVoid[]>([]);
-    const [placements, setPlacements] = useState<IPlacement[]>([]);
-    const [borders, setBorders] = useState<IBorder[]>([]);
-    const [facilities, setFacilities] = useState<IFacility[]>([]);
-    const {currentFloor, setCurrentFloor} = useFloor()
+    const { parkingPlaces, shops, voids, placements, borders, facilities } = useMapData();
 
-    useEffect(() => {
-        fetch(`/api/map?floor=${currentFloor}&type=parking`)
-            .then((response) => response.json())
-            .then((data) => setParkingPlaces(data))
-            .catch((error) => console.error('Error fetching parking data:', error));
-    }, [currentFloor]);
-
-    useEffect(() => {
-        fetch(`/api/map?floor=${currentFloor}&type=voids`)
-            .then((response) => response.json())
-            .then((data) => setVoids(data))
-            .catch((error) => console.error('Error fetching void data:', error));
-    }, [currentFloor]);
-
-    useEffect(() => {
-        fetch(`/api/map?floor=${currentFloor}&type=placements`)
-            .then((response) => response.json())
-            .then((data) => setPlacements(data))
-            .catch((error) => console.error('Error fetching placement data:', error));
-    }, [currentFloor]);
-
-    useEffect(() => {
-        fetch(`/api/map?floor=${currentFloor}&type=shops`)
-            .then((response) => response.json())
-            .then((data) => setShops(data))
-            .catch((error) => console.error('Error fetching shop data:', error));
-    }, [currentFloor]);
-
-    useEffect(() => {
-        fetch(`/api/map?floor=${currentFloor}&type=borders`)
-            .then((response) => response.json())
-            .then((data) => setBorders(data))
-            .catch((error) => console.error('Error fetching border data:', error));
-    }, [currentFloor]);
-
-    useEffect(() => {
-        fetch(`/api/map?floor=${currentFloor}&type=facilities`)
-            .then((response) => response.json())
-            .then((data) => setFacilities(data))
-            .catch((error) => console.error('Error fetching facilities data:', error));
-    }, [currentFloor]);
 
     const customIcons: { [key in FacilityType]: Icon } = {
         [FacilityType.Elevator]: new Icon({

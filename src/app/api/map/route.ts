@@ -9,7 +9,6 @@ export async function GET(req: NextRequest) {
     const params = req.nextUrl.searchParams
     const floor = params.get("floor")
     const type = params.get("type")
-    console.log(type)
 
     if (!type || !models[type]) {
         return NextResponse.json({error: 'Invalid objects parameter'}, {status: 400})
