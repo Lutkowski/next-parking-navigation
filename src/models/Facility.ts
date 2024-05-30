@@ -3,7 +3,8 @@ import {model, Schema} from "mongoose";
 
 export enum FacilityType {
     Elevator = 'Лифт',
-    Escalator = 'Эскалатор',
+    EscalatorUp = 'Эскалатор вверх',
+    EscalatorDown = 'Эскалатор вниз',
     Entrance = 'Вход'
 }
 
