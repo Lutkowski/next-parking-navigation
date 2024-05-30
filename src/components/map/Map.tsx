@@ -6,7 +6,7 @@ import {LatLngExpression} from "leaflet";
 import {Icon} from 'leaflet'
 import {FacilityType} from "@/models/Facility";
 import {useMapData} from "@/hooks/useMapData";
-
+import Zoom from "@/components/ui/zoom/Zoom";
 
 const Map = () => {
 
@@ -39,13 +39,21 @@ const Map = () => {
 
     return (
         <div>
-            <MapContainer center={initialPosition} minZoom={18} zoom={18} style={{height: '100vh', width: '100%'}}>
+            <MapContainer
+                center={initialPosition}
+                minZoom={18}
+                zoom={18}
+                zoomControl={false}
+                style={{height: '100vh', width: '100%'}}
+            >
                 <TileLayer
                     url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://carto.com/attributions">CartoDB</a> contributors'
                     maxNativeZoom={19}
                     maxZoom={21}
                 />
+
+                <Zoom/>
 
                 {parkingPlaces.map((path) => (
                     <Polygon
