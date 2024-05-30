@@ -26,46 +26,42 @@ const Map = () => {
     const {currentFloor, setCurrentFloor} = useFloor()
 
     useEffect(() => {
-        // Получение данных о парковочных местах с сервера
-        fetch(`/api/parking?floor=${currentFloor}`)
+        fetch(`/api/map?floor=${currentFloor}&type=parking`)
             .then((response) => response.json())
             .then((data) => setParkingPlaces(data))
             .catch((error) => console.error('Error fetching parking data:', error));
     }, [currentFloor]);
 
     useEffect(() => {
-        // Получение данных о магазинах с сервера
-        fetch(`/api/voids?floor=${currentFloor}`)
+        fetch(`/api/map?floor=${currentFloor}&type=voids`)
             .then((response) => response.json())
             .then((data) => setVoids(data))
             .catch((error) => console.error('Error fetching void data:', error));
     }, [currentFloor]);
 
     useEffect(() => {
-        // Получение данных о магазинах с сервера
-        fetch(`/api/placements?floor=${currentFloor}`)
+        fetch(`/api/map?floor=${currentFloor}&type=placements`)
             .then((response) => response.json())
             .then((data) => setPlacements(data))
             .catch((error) => console.error('Error fetching placement data:', error));
     }, [currentFloor]);
 
     useEffect(() => {
-        // Получение данных о магазинах с сервера
-        fetch(`/api/shops?floor=${currentFloor}`)
+        fetch(`/api/map?floor=${currentFloor}&type=shops`)
             .then((response) => response.json())
             .then((data) => setShops(data))
             .catch((error) => console.error('Error fetching shop data:', error));
     }, [currentFloor]);
 
     useEffect(() => {
-        fetch(`/api/borders?floor=${currentFloor}`)
+        fetch(`/api/map?floor=${currentFloor}&type=borders`)
             .then((response) => response.json())
             .then((data) => setBorders(data))
             .catch((error) => console.error('Error fetching border data:', error));
     }, [currentFloor]);
 
     useEffect(() => {
-        fetch(`/api/facilities?floor=${currentFloor}`)
+        fetch(`/api/map?floor=${currentFloor}&type=facilities`)
             .then((response) => response.json())
             .then((data) => setFacilities(data))
             .catch((error) => console.error('Error fetching facilities data:', error));
