@@ -2,6 +2,9 @@ import React, {useState} from "react";
 import {LatLngExpression} from "leaflet";
 import {useFloor} from "@/contexts/FloorContext";
 import {useMap} from "react-leaflet";
+import classes from "./search.module.scss";
+import searchIcon from "../../../../public/search.svg"
+import Image from "next/image";
 
 interface SearchProps {
     setFoundShop: (name: string | null) => void;
@@ -34,8 +37,9 @@ const Search: React.FC<SearchProps> = ({setFoundShop}) => {
     const [search, setSearch] = useState('')
 
     return (
-        <div style={{position: "absolute", zIndex: 1000, top: "10px", left: "10px"}}>
+        <div className={classes.search}>
             <input
+                className={classes.searchForm}
                 type="text"
                 placeholder="Название магазина"
                 value={search}
@@ -43,8 +47,12 @@ const Search: React.FC<SearchProps> = ({setFoundShop}) => {
                     setSearch(event.target.value)
                 }}>
             </input>
-            <button onClick={handleSearch}>
-                Искать
+            <button className={classes.searchButton} onClick={handleSearch}>
+                <Image
+                    src={searchIcon}
+                    alt={"Иконка поиска"}
+                    loading={"eager"}
+                />
             </button>
         </div>
     );
