@@ -1,5 +1,5 @@
 import {ITRKObject} from "@/models/TRKObject";
-import {model, Schema} from "mongoose";
+import mongoose, {model, Schema} from "mongoose";
 
 export interface IBorder extends ITRKObject {
     color: string;
@@ -24,5 +24,5 @@ const BorderSchema: Schema = new Schema({
     },
 })
 
-const Border = model<IBorder>('Border', BorderSchema)
+const Border = mongoose.models?.Border || model<IBorder>('Border', BorderSchema)
 export default Border

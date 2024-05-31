@@ -1,4 +1,4 @@
-import {model, Schema} from "mongoose";
+import mongoose, {model, Schema} from "mongoose";
 import {ITRKObject} from "@/models/TRKObject";
 
 export interface IParkingPlace extends ITRKObject {
@@ -20,6 +20,6 @@ const parkingPlaceSchema: Schema = new Schema({
     },
 })
 
-const ParkingPlace = model<IParkingPlace>('ParkingPlace', parkingPlaceSchema);
+const ParkingPlace = mongoose.models?.ParkingPlace || model<IParkingPlace>('ParkingPlace', parkingPlaceSchema);
 
 export default ParkingPlace

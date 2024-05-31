@@ -1,5 +1,5 @@
 import {ITRKObject} from "@/models/TRKObject";
-import {model, Schema} from "mongoose";
+import mongoose, {model, Schema} from "mongoose";
 
 export interface IShop extends ITRKObject {
     slug: string;
@@ -24,5 +24,5 @@ const ShopSchema: Schema = new Schema({
     },
 })
 
-const Shop = model<IShop>('Shop', ShopSchema)
+const Shop = mongoose.models?.Shop || model<IShop>('Shop', ShopSchema)
 export default Shop

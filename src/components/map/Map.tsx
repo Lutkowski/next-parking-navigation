@@ -7,12 +7,15 @@ import {Icon} from 'leaflet'
 import {FacilityType} from "@/models/Facility";
 import {useMapData} from "@/hooks/useMapData";
 import Zoom from "@/components/ui/zoom/Zoom";
+import Sidebar from "@/components/ui/sidebar/Sidebar";
+import {useState} from "react";
+import Search from "@/components/ui/search/search";
 
 const Map = () => {
 
     const initialPosition: [number, number] = [56.306470, 44.075805];
-    const { parkingPlaces, shops, voids, placements, borders, facilities } = useMapData();
-
+    const [foundShop, setFoundShop] = useState<string | null>(null)
+    const {parkingPlaces, shops, voids, placements, borders, facilities} = useMapData();
 
     const customIcons: { [key in FacilityType]: Icon } = {
         [FacilityType.Elevator]: new Icon({
@@ -46,6 +49,8 @@ const Map = () => {
                 zoomControl={false}
                 style={{height: '100vh', width: '100%'}}
             >
+                <Search setFoundShop={setFoundShop}/>
+                <Sidebar/>
                 <TileLayer
                     url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://carto.com/attributions">CartoDB</a> contributors'

@@ -1,5 +1,5 @@
 import {ITRKObject} from "@/models/TRKObject";
-import {model, Schema} from "mongoose";
+import mongoose, {model, Schema} from "mongoose";
 
 export interface IPlacement extends ITRKObject {
 }
@@ -19,5 +19,5 @@ const PlacementSchema: Schema = new Schema({
     }
 })
 
-const Placement = model<IPlacement>('Placement', PlacementSchema)
+const Placement = mongoose.models?.Placement ||model<IPlacement>('Placement', PlacementSchema)
 export default Placement
