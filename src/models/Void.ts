@@ -1,5 +1,5 @@
 import {ITRKObject} from "@/models/TRKObject";
-import {model, Schema} from "mongoose";
+import mongoose, {model, Schema} from "mongoose";
 
 export interface IVoid extends ITRKObject {
 }
@@ -19,5 +19,5 @@ const VoidSchema: Schema = new Schema({
     }
 })
 
-const Void = model<IVoid>('Void', VoidSchema)
+const Void = mongoose.models?.Void || model<IVoid>('Void', VoidSchema)
 export default Void

@@ -1,5 +1,5 @@
 import {ITRKObject} from "@/models/TRKObject";
-import {model, Schema} from "mongoose";
+import mongoose, {model, Schema} from "mongoose";
 
 export enum FacilityType {
     Elevator = 'Лифт',
@@ -37,6 +37,6 @@ const facilitySchema: Schema = new Schema({
     },
 })
 
-const Facility = model<IFacility>('Facility', facilitySchema)
+const Facility = mongoose.models?.Facility || model<IFacility>('Facility', facilitySchema)
 
 export default Facility

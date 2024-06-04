@@ -12,7 +12,6 @@ export default function Home() {
             <FloorProvider>
                 <div style={{position: "relative"}}>
                     <DynamicMap/>
-                    <Sidebar/>
                 </div>
             </FloorProvider>
         </main>
