@@ -1,21 +1,23 @@
 'use client'
 
 import 'leaflet/dist/leaflet.css'
-import {MapContainer, TileLayer, Polygon, Marker, Popup, Polyline} from 'react-leaflet';
-import {LatLngExpression} from "leaflet";
-import {Icon} from 'leaflet'
+import {MapContainer, Marker, Polygon, Polyline, Popup, TileLayer} from 'react-leaflet';
+import {Icon, LatLngExpression} from "leaflet";
 import {FacilityType} from "@/models/Facility";
 import {useMapData} from "@/hooks/useMapData";
 import Zoom from "@/components/ui/zoom/Zoom";
 import Sidebar from "@/components/ui/sidebar/Sidebar";
 import {useState} from "react";
-import Search from "@/components/ui/search/search";
+import Search from "@/components/ui/search/Search";
+import {ShopCategory} from "@/models/Shop";
+import Filter from "@/components/ui/filter/Filter";
 
 const Map = () => {
 
     const initialPosition: [number, number] = [56.306470, 44.075805];
     const [foundShop, setFoundShop] = useState<string | null>(null)
     const {parkingPlaces, shops, voids, placements, borders, facilities} = useMapData();
+    const [filter, setFilter] = useState<string | null>(null)
 
     const customIcons: { [key in FacilityType]: Icon } = {
         [FacilityType.Elevator]: new Icon({
@@ -40,6 +42,23 @@ const Map = () => {
         }),
     };
 
+    const getColorByCategory = (category: ShopCategory) => {
+        switch (category) {
+            case ShopCategory.Beauty:
+                return 'rgba(255, 192, 203, 0.5)';
+            case ShopCategory.Fashion:
+                return 'rgba(0, 0, 255, 0.5)';
+            case ShopCategory.Food:
+                return 'rgba(255, 165, 0, 0.5)';
+            case ShopCategory.Pharmacy:
+                return 'rgba(0, 128, 0, 0.5)';
+            default:
+                return 'rgba(255, 165, 0, 0.5)'
+        }
+    }
+
+    const filteredShops = filter ? shops.filter(shop => shop.category === filter) : shops;
+
     return (
         <div>
             <MapContainer
@@ -50,6 +69,7 @@ const Map = () => {
                 style={{height: '100vh', width: '100%'}}
             >
                 <Search setFoundShop={setFoundShop}/>
+                <Filter setFilter={setFilter}/>
                 <Sidebar/>
                 <TileLayer
                     url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
@@ -73,20 +93,16 @@ const Map = () => {
                     />
                 ))}
 
-                {shops.map((shop) => (
+                {filteredShops.map((shop) => (
                     <Polygon
                         key={shop._id}
                         positions={shop.coordinates as LatLngExpression[]}
                         pathOptions={{
-                            color: 'rgba(255, 165, 0, 0.5)',
+                            color: foundShop === shop._id ? 'red' : getColorByCategory(shop.category),
                             weight: 3,
-                            fillColor: 'yellow',
+                            fillColor: getColorByCategory(shop.category),
                         }}
                         className='shops'
-                        eventHandlers={{
-                            mouseover: (event) => event.target.setStyle({color: 'rgba(255, 165, 0, 1)'}),
-                            mouseout: (event) => event.target.setStyle({color: 'rgba(255, 165, 0, 0.5)'}),
-                        }}
                     >
                         <Popup>{shop.slug}</Popup>
                     </Polygon>
