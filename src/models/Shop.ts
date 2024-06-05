@@ -1,7 +1,7 @@
 import {ITRKObject} from "@/models/TRKObject";
 import mongoose, {model, Schema} from "mongoose";
 
-export enum shopCategory {
+export enum ShopCategory {
     Fashion = 'Одежда и аксессуары',
     Pharmacy = 'Аптеки',
     Food = 'Рестораны',
@@ -10,7 +10,7 @@ export enum shopCategory {
 
 export interface IShop extends ITRKObject {
     slug: string;
-    category: shopCategory,
+    category: ShopCategory,
 }
 
 const ShopSchema: Schema = new Schema({
@@ -32,7 +32,7 @@ const ShopSchema: Schema = new Schema({
     },
     category: {
         type: String,
-        enum: Object.values(shopCategory)
+        enum: Object.values(ShopCategory)
     }
 })
 

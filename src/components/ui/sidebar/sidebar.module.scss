@@ -13,8 +13,9 @@
 }
 
 .sidebar button {
-    color: black;
-    border: 3px solid black;
+    color: var(--text-color);
+    border: var(--second-color) solid 3px;
+    border-radius:40%;
     background: white;
     padding:15px;
     font-family: sans-serif;

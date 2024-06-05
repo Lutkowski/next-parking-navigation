@@ -1,3 +1,5 @@
+'use client'
+
 import React, {useState} from "react";
 import {LatLngExpression} from "leaflet";
 import {useFloor} from "@/contexts/FloorContext";
