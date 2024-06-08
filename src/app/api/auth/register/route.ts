@@ -1,30 +1,27 @@
-import {NextApiRequest, NextApiResponse} from "next";
 import dbConnect from "@/lib/dbConnect";
 import * as bcrypt from "bcrypt"
 import User from "@/models/User";
+import {NextRequest, NextResponse} from "next/server";
 
 
-export async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({message: 'Method not allowed'});
-    }
+export async function POST(req: NextRequest) {
 
-    const {username, email, password} = req.body;
+    const {username, email, password} = await req.json();
 
     try {
         await dbConnect()
 
         const existingUser = await User.findOne({email})
         if (existingUser) {
-            return res.status(400).json({message: 'Пользователь с такой почтой уже зарегистрирован'})
+            return NextResponse.json({message: 'Пользователь с таким email уже зарегистрирован'}, {status: 400})
         }
 
-        const hashedPassword = bcrypt.hash(password, Number(process.env.SALT_ROUNDS))
+        const hashedPassword = await bcrypt.hash(password, Number(process.env.SALT_ROUNDS))
 
-        const newUser = new User({username, email, hashedPassword})
+        const newUser = new User({username, email, password:hashedPassword})
         await newUser.save()
-        res.status(201).json({message: 'Вы успешно зарегистрированы'})
+        return NextResponse.json({message:'Пользователь успешно зарегистрирован'}, {status: 201})
     } catch (e) {
-        res.status(500).json({message: 'Внутренняя ошибка сервера'})
+        return NextResponse.json({message: 'Внутренняя ошибка сервера'}, {status: 500})
     }
 }

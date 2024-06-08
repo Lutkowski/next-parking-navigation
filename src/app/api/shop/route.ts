@@ -9,13 +9,13 @@ export async function GET(req: NextRequest) {
     const slug = params.get("slug")
 
     if (!slug) {
-        return NextResponse.json({error: 'Нет параметра slug'}, {status: 400})
+        return NextResponse.json({message: 'Нет параметра slug'}, {status: 400})
     }
 
     const shop = await Shop.findOne({slug: slug})
 
     if (!shop) {
-        return NextResponse.json({ error: 'Магазин не найден' }, { status: 404 });
+        return NextResponse.json({ message: 'Магазин не найден' }, { status: 404 });
     }
 
     return NextResponse.json(shop);
