@@ -5,7 +5,7 @@ import User from "@/models/User";
 import dbConnect from "@/lib/dbConnect";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-export default NextAuth({
+const handler = NextAuth({
     session: {
         strategy: "jwt",
     },
@@ -16,7 +16,7 @@ export default NextAuth({
                 email: {label: 'Email', type: 'text'},
                 password: {label: 'Password', type: 'password'},
             },
-            authorize: async (credentials: any) => {
+            authorize: async (credentials: any, req) => {
                 await dbConnect()
 
                 const user = await User.findOne({email: credentials.email});
@@ -35,3 +35,4 @@ export default NextAuth({
     ],
 })
 
+export {handler as GET, handler as POST}
