@@ -3,6 +3,7 @@
 import classes from "./myform.module.scss";
 import {FormEvent} from "react";
 import {signIn} from "next-auth/react";
+import {useRouter} from "next/navigation";
 
 
 interface MyFormProps {
@@ -10,6 +11,7 @@ interface MyFormProps {
 }
 
 const MyForm: React.FC<MyFormProps> = ({type}) => {
+    const router = useRouter();
     const handleRegisterSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
@@ -29,11 +31,16 @@ const MyForm: React.FC<MyFormProps> = ({type}) => {
     const handleLoginSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        await signIn('credentials', {
+        const response = await signIn('credentials', {
             email: formData.get("email"),
             password: formData.get("password"),
             redirect: false,
         })
+
+        if (!response?.error) {
+            router.push("/");
+            router.refresh();
+        }
     }
 
     return (
