@@ -1,9 +1,12 @@
 import MyForm from "@/components/ui/myForm/MyForm";
+import Wrapper from "@/components/wrapper/Wrapper";
 
 
 const Page = () => {
     return (
-        <MyForm type="Регистрация"/>
+        <Wrapper>
+            <MyForm type="Регистрация"/>
+        </Wrapper>
     );
 };
 

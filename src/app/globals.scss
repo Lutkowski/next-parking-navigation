@@ -1,13 +1,17 @@
 :root {
   --first-color: #0056B3;
   --second-color: #FFFFFF;
+  --first-color-transparent: rgba(0, 86, 179, 0.3);
   --text-size: 16px;
+  --ui-border: var(--first-color) solid 2px;
+  --ui-border-tranparent: var(--first-color-transparent) solid 2px;
 }
 
-body {
+html, body {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  height: 100vh;
 }
 
 .leaflet-attribution-flag {

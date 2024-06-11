@@ -6,12 +6,13 @@ import {useRouter} from "next/navigation";
 import {signOut} from "next-auth/react";
 
 interface MyButtonProps {
-    actionType: 'Login' | 'Logout',
+    actionType?: 'Login' | 'Logout';
     onClick?: MouseEventHandler<HTMLButtonElement>;
-    children?: ReactNode,
+    children?: ReactNode;
+    type?: 'button' | 'submit' | 'reset';
 }
 
-const MyButton: React.FC<MyButtonProps> = ({actionType, children, onClick}) => {
+const MyButton: React.FC<MyButtonProps> = ({actionType, children, onClick, type}) => {
     const router = useRouter();
 
     const handleClick: MouseEventHandler<HTMLButtonElement> = async (event) => {
@@ -32,7 +33,7 @@ const MyButton: React.FC<MyButtonProps> = ({actionType, children, onClick}) => {
     }
 
     return (
-        <button className={classes.myButton} onClick={handleClick}>
+        <button className={classes.myButton} onClick={handleClick} type={type}>
             {children}
         </button>
     );
