@@ -1,0 +1,11 @@
+.myButton {
+  padding: 10px 20px;
+  border: none;
+  background-color: var(--first-color);
+  color: var(--second-color);
+  font-size: var(--text-size);
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background-color 0.3s;
+
+}

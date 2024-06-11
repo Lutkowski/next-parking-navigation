@@ -11,6 +11,7 @@ import {useState} from "react";
 import Search from "@/components/ui/search/Search";
 import {ShopCategory} from "@/models/Shop";
 import Filter from "@/components/ui/filter/Filter";
+import classes from "./map.module.scss";
 
 const Map = () => {
 
@@ -60,91 +61,89 @@ const Map = () => {
     const filteredShops = filter ? shops.filter(shop => shop.category === filter) : shops;
 
     return (
-        <div>
-            <MapContainer
-                center={initialPosition}
-                minZoom={18}
-                zoom={18}
-                zoomControl={false}
-                style={{height: '100vh', width: '100%'}}
-            >
-                <Search setFoundShop={setFoundShop}/>
-                <Filter setFilter={setFilter}/>
-                <Sidebar/>
-                <TileLayer
-                    url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://carto.com/attributions">CartoDB</a> contributors'
-                    maxNativeZoom={19}
-                    maxZoom={21}
+        <MapContainer
+            center={initialPosition}
+            minZoom={18}
+            zoom={18}
+            zoomControl={false}
+            className={classes.map}
+        >
+            <Search setFoundShop={setFoundShop}/>
+            <Filter setFilter={setFilter}/>
+            <Sidebar/>
+            <TileLayer
+                url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://carto.com/attributions">CartoDB</a> contributors'
+                maxNativeZoom={19}
+                maxZoom={21}
+            />
+
+            <Zoom/>
+
+            {parkingPlaces.map((path) => (
+                <Polygon
+                    key={path._id}
+                    positions={path.coordinates as LatLngExpression[]}
+                    color='red'
+                    className='cars'
+                    eventHandlers={{
+                        mouseover: (event) => event.target.setStyle({color: 'blue'}),
+                        mouseout: (event) => event.target.setStyle({color: 'red'}),
+                    }}
                 />
+            ))}
 
-                <Zoom/>
+            {filteredShops.map((shop) => (
+                <Polygon
+                    key={shop._id}
+                    positions={shop.coordinates as LatLngExpression[]}
+                    pathOptions={{
+                        color: foundShop === shop._id ? 'red' : getColorByCategory(shop.category),
+                        weight: 3,
+                        fillColor: getColorByCategory(shop.category),
+                    }}
+                    className='shops'
+                >
+                    <Popup>{shop.slug}</Popup>
+                </Polygon>
+            ))}
 
-                {parkingPlaces.map((path) => (
-                    <Polygon
-                        key={path._id}
-                        positions={path.coordinates as LatLngExpression[]}
-                        color='red'
-                        className='cars'
-                        eventHandlers={{
-                            mouseover: (event) => event.target.setStyle({color: 'blue'}),
-                            mouseout: (event) => event.target.setStyle({color: 'red'}),
-                        }}
-                    />
-                ))}
+            {voids.map((path) => (
+                <Polygon
+                    key={path._id}
+                    positions={path.coordinates as LatLngExpression[]}
+                    color='rgba(127, 127, 127, 0.4)'
+                />
+            ))}
 
-                {filteredShops.map((shop) => (
-                    <Polygon
-                        key={shop._id}
-                        positions={shop.coordinates as LatLngExpression[]}
-                        pathOptions={{
-                            color: foundShop === shop._id ? 'red' : getColorByCategory(shop.category),
-                            weight: 3,
-                            fillColor: getColorByCategory(shop.category),
-                        }}
-                        className='shops'
-                    >
-                        <Popup>{shop.slug}</Popup>
-                    </Polygon>
-                ))}
+            {placements.map((path) => (
+                <Polygon
+                    key={path._id}
+                    positions={path.coordinates as LatLngExpression[]}
+                    color='rgba(127, 127, 127, 1)'
+                />
+            ))}
 
-                {voids.map((path) => (
-                    <Polygon
-                        key={path._id}
-                        positions={path.coordinates as LatLngExpression[]}
-                        color='rgba(127, 127, 127, 0.4)'
-                    />
-                ))}
+            {facilities.map((facility) => (
+                <Marker
+                    key={facility._id}
+                    icon={customIcons[facility.type]}
+                    position={facility.coordinate as LatLngExpression}
+                >
+                    <Popup>{facility.type}</Popup>
+                </Marker>
+            ))}
 
-                {placements.map((path) => (
-                    <Polygon
-                        key={path._id}
-                        positions={path.coordinates as LatLngExpression[]}
-                        color='rgba(127, 127, 127, 1)'
-                    />
-                ))}
+            {borders.map((border) => (
+                <Polyline
+                    key={border._id}
+                    positions={border.coordinates as LatLngExpression[]}
+                    color={border.color}
+                    weight={2}
+                />
+            ))}
 
-                {facilities.map((facility) => (
-                    <Marker
-                        key={facility._id}
-                        icon={customIcons[facility.type]}
-                        position={facility.coordinate as LatLngExpression}
-                    >
-                        <Popup>{facility.type}</Popup>
-                    </Marker>
-                ))}
-
-                {borders.map((border) => (
-                    <Polyline
-                        key={border._id}
-                        positions={border.coordinates as LatLngExpression[]}
-                        color={border.color}
-                        weight={2}
-                    />
-                ))}
-
-            </MapContainer>
-        </div>
+        </MapContainer>
     )
 }
 

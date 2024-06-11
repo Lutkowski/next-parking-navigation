@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     const type = params.get("type")
 
     if (!type || !models[type]) {
-        return NextResponse.json({error: 'Invalid objects parameter'}, {status: 400})
+        return NextResponse.json({message: 'Invalid objects parameter'}, {status: 400})
     }
 
     const filter = floor ? {floor: Number(floor)} : {}
