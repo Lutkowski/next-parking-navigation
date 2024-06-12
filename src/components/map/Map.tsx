@@ -27,8 +27,16 @@ const Map = () => {
     const [showModal, setShowModal] = useState(false);
     const [places, setPlaces] = useState(parkingPlaces);
     const [modalMessage, setModalMessage] = useState<string | null>(null);
+    const [userEmail, setUserEmail] = useState<string | null>(null);
+
 
     useEffect(() => {
+        const fetchSession = async () => {
+            const session = await getSession();
+            setUserEmail(session?.user?.email || null);
+        };
+
+        fetchSession();
         setPlaces(parkingPlaces);
     }, [parkingPlaces]);
 
@@ -76,14 +84,37 @@ const Map = () => {
             const bookingEnd = new Date(place.bookingEnd);
 
             if (now <= bookingEnd) {
-                return 'red';
+                return place.userEmail === userEmail ? 'yellow' : 'red';
             }
         }
-
         return 'green';
     };
 
-    const handlePlaceClick = (place: IParkingPlace) => {
+    const handlePlaceClick = async (place: IParkingPlace) => {
+        const session = await getSession();
+        if (!session || !session.user) {
+            setModalMessage('Для бронирования парковочного места войдите в систему.');
+            return;
+        }
+
+        if (place.bookingEnd) {
+            const now = new Date();
+            const bookingEnd = new Date(place.bookingEnd);
+
+            if (now <= bookingEnd) {
+                if (place.userEmail === userEmail) {
+                    // Наше забронированное место
+                    setSelectedPlace(place);
+                    setShowModal(true);
+                } else {
+                    // Забронированное место другого пользователя
+                    setModalMessage('Данное место уже забронировано.');
+                }
+                return;
+            }
+        }
+
+        // Свободное место
         setSelectedPlace(place);
         setShowModal(true);
     };
@@ -130,7 +161,38 @@ const Map = () => {
         }
     };
 
+    const handleCancelBooking = async () => {
+        if (!selectedPlace) {
+            setModalMessage('Выберите место для отмены бронирования.');
+            return;
+        }
+
+        const response = await fetch('/api/booking', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                parkingPlaceId: selectedPlace._id,
+            }),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            setPlaces((prevPlaces) =>
+                prevPlaces.map((place) => (place._id === data.parkingPlace._id ? data.parkingPlace : place))
+            );
+            setShowModal(false);
+            setModalMessage('Бронирование успешно отменено!');
+        } else {
+            const data = await response.json();
+            setModalMessage(`Ошибка отмены бронирования: ${data.message}`);
+        }
+    };
+
+
     const filteredShops = filter ? shops.filter(shop => shop.category === filter) : shops;
+
 
     return (
         <>
@@ -222,10 +284,12 @@ const Map = () => {
                     place={selectedPlace}
                     onClose={handleModalClose}
                     onBook={handleBooking}
+                    onCancel={handleCancelBooking}
+                    userEmail={userEmail}
                 />
             )}
 
-            {modalMessage && <MyModal message={modalMessage} onClose={handleModalClose} />}
+            {modalMessage && <MyModal message={modalMessage} onClose={handleModalClose}/>}
         </>
     )
 }

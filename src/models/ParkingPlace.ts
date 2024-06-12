@@ -4,6 +4,7 @@ import {IUser} from "@/models/User";
 
 export interface IParkingPlace extends ITRKObject {
     user?: IUser | null;
+    userEmail: string | null;
     bookingEnd?: Date | null;
 }
 
@@ -23,6 +24,10 @@ const parkingPlaceSchema: Schema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
+        default: null,
+    },
+    userEmail: {
+        type: String,
         default: null,
     },
     bookingEnd: {
