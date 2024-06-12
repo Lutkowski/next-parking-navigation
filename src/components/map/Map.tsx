@@ -1,7 +1,7 @@
 'use client'
 
 import 'leaflet/dist/leaflet.css'
-import {MapContainer, Marker, Polygon, Polyline, Popup, TileLayer} from 'react-leaflet';
+import {MapContainer, Marker, Pane, Polygon, Polyline, Popup, TileLayer} from 'react-leaflet';
 import {Icon, LatLngExpression} from "leaflet";
 import {FacilityType} from "@/models/Facility";
 import {useMapData} from "@/hooks/useMapData";
@@ -191,6 +191,41 @@ const Map = () => {
     };
 
 
+    const getCenter = (coordinates: [number, number][]) => {
+        const lat = coordinates.reduce((acc, coord) => acc + coord[0], 0) / coordinates.length;
+        const lng = coordinates.reduce((acc, coord) => acc + coord[1], 0) / coordinates.length;
+        return [lat, lng] as LatLngExpression;
+    };
+
+    const escapeHtml = (unsafe: string) => {
+        return unsafe
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    };
+
+    const wrapText = (text: string, maxLineLength: number) => {
+        const words = text.split(' ');
+        let lines = [];
+        let currentLine = '';
+
+        words.forEach(word => {
+            if (currentLine.length + word.length <= maxLineLength) {
+                currentLine += word + ' ';
+            } else {
+                lines.push(currentLine.trim());
+                currentLine = word + ' ';
+            }
+        });
+
+        lines.push(currentLine.trim());
+        return lines;
+    };
+
+
+
     const filteredShops = filter ? shops.filter(shop => shop.category === filter) : shops;
 
 
@@ -241,6 +276,48 @@ const Map = () => {
                         <Popup>{shop.slug}</Popup>
                     </Polygon>
                 ))}
+
+                <Pane name="labels" style={{ zIndex: 500 }}>
+                    {filteredShops.map((shop) => {
+                        const escapedSlug = escapeHtml(shop.slug);
+                        const lines = wrapText(escapedSlug, 10);
+                        const svgText = lines.map((line, index) => `<tspan x="50%" dy="${index === 0 ? 0 : 15}">${line}</tspan>`).join('');
+
+                        return (
+                            <Marker
+                                key={shop._id}
+                                position={getCenter(shop.coordinates)}
+                                icon={new Icon({
+                                    iconUrl: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" width="100" height="50">
+                            <rect  width="100" height="50" fill="rgba(255, 255, 255, 0.0)" rx="5" ry="5"/>
+                            <text  font-weight="700" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="10" fill="black">${svgText}</text>
+                        </svg>
+                    `),
+                                    iconSize: [100, 50],
+                                    iconAnchor: [50, 25],
+                                    className: classes.shopLabel
+                                })}
+                            />
+                        );
+                    })}
+                </Pane>
+
+                {filteredShops.map((shop) => (
+                    <Polygon
+                        key={shop._id}
+                        positions={shop.coordinates as LatLngExpression[]}
+                        pathOptions={{
+                            color: foundShop === shop._id ? 'red' : getColorByCategory(shop.category),
+                            weight: 3,
+                            fillColor: getColorByCategory(shop.category),
+                        }}
+                        className='shops'
+                    >
+                        <Popup>{shop.slug}</Popup>
+                    </Polygon>
+                ))}
+
 
                 {voids.map((path) => (
                     <Polygon
