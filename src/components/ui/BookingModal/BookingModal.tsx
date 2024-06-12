@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import classes from './bookingModal.module.scss';
+import classes from './bookingmodal.module.scss';
 import MyButton from '@/components/ui/myButton/MyButton';
 
 interface BookingModalProps {
