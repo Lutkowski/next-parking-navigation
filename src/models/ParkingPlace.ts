@@ -1,8 +1,11 @@
 import mongoose, {model, Schema} from "mongoose";
 import {ITRKObject} from "@/models/TRKObject";
+import {IUser} from "@/models/User";
 
 export interface IParkingPlace extends ITRKObject {
-
+    user?: IUser | null;
+    userEmail: string | null;
+    bookingEnd?: Date | null;
 }
 
 const parkingPlaceSchema: Schema = new Schema({
@@ -17,6 +20,19 @@ const parkingPlaceSchema: Schema = new Schema({
     floor: {
         type: Number,
         required: true,
+    },
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        default: null,
+    },
+    userEmail: {
+        type: String,
+        default: null,
+    },
+    bookingEnd: {
+        type: Date,
+        default: null,
     },
 })
 
