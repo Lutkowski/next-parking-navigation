@@ -224,6 +224,18 @@ const Map = () => {
         return lines;
     };
 
+    const calculatePolygonArea = (coordinates: [number, number][]) => {
+        let area = 0;
+        const numPoints = coordinates.length;
+
+        for (let i = 0; i < numPoints; i++) {
+            const [x1, y1] = coordinates[i];
+            const [x2, y2] = coordinates[(i + 1) % numPoints];
+            area += x1 * y2 - x2 * y1;
+        }
+
+        return Math.abs(area / 2);
+    };
 
 
     const filteredShops = filter ? shops.filter(shop => shop.category === filter) : shops;
@@ -277,8 +289,12 @@ const Map = () => {
                     </Polygon>
                 ))}
 
-                <Pane name="labels" style={{ zIndex: 500 }}>
+                <Pane name="labels" style={{zIndex: 500}}>
                     {filteredShops.map((shop) => {
+                        const area = calculatePolygonArea(shop.coordinates);
+                        console.log(`${shop.slug}:${area}`)
+                        if (area < 9.697623681859113e-8) return null;
+
                         const escapedSlug = escapeHtml(shop.slug);
                         const lines = wrapText(escapedSlug, 10);
                         const svgText = lines.map((line, index) => `<tspan x="50%" dy="${index === 0 ? 0 : 15}">${line}</tspan>`).join('');
