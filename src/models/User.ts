@@ -4,6 +4,8 @@ export interface IUser {
     username: string;
     email: string;
     password: string;
+    bookedPlace?: string;
+    bookingEnd?: Date;
 }
 
 const UserSchema: Schema = new Schema({
@@ -19,7 +21,16 @@ const UserSchema: Schema = new Schema({
     password: {
         type: String,
         required: [true, "Укажите пароль"],
-    }
+    },
+    bookedPlace: {
+        type: String,
+        ref: 'ParkingPlace',
+        default: null,
+    },
+    bookingEnd: {
+        type: Date,
+        default: null,
+    },
 })
 
 const User = mongoose.models?.User || model<IUser>('User', UserSchema)
