@@ -18,6 +18,7 @@ import BookingModal from '@/components/ui/BookingModal/BookingModal';
 import MyModal from '@/components/ui/myModal/MyModal';
 import RouteModal from '@/components/ui/RouteModal/RouteModal';
 import Image from 'next/image';
+import {useFloor} from "@/contexts/FloorContext"; // Импортируем контекст этажа
 
 const Map = () => {
     const initialPosition: [number, number] = [56.306470, 44.075805];
@@ -30,6 +31,10 @@ const Map = () => {
     const [modalMessage, setModalMessage] = useState<string | null>(null);
     const [userEmail, setUserEmail] = useState<string | null>(null);
     const [showRouteModal, setShowRouteModal] = useState(false);
+    const [route, setRoute] = useState<LatLngExpression[]>([]);
+    const [routeFloor, setRouteFloor] = useState<number | null>(null); // Добавляем состояние для этажа маршрута
+
+    const {currentFloor} = useFloor(); // Используем контекст этажа
 
     useEffect(() => {
         const fetchSession = async () => {
@@ -244,11 +249,26 @@ const Map = () => {
         setShowRouteModal(false);
     };
 
-    const handleBuildRoute = (startShop: string, endShop: string) => {
-        // Логика построения маршрута
-        console.log(`Маршрут от ${startShop} до ${endShop}`);
+    const handleBuildRoute = async (startShopName: string, endShopName: string) => {
+        const response = await fetch(`/api/route?startShopName=${encodeURIComponent(startShopName)}&endShopName=${encodeURIComponent(endShopName)}`);
+        if (response.ok) {
+            const data = await response.json();
+            setRoute(data.coordinates);
+            setRouteFloor(data.floor); // Установим этаж для маршрута
+        }
         setShowRouteModal(false);
     };
+
+    const clearRoute = () => {
+        setRoute([]);
+        setRouteFloor(null);
+    };
+
+    useEffect(() => {
+        if (route.length > 0) {
+            console.log('Route coordinates:', route);
+        }
+    }, [route]);
 
     return (
         <>
@@ -376,6 +396,8 @@ const Map = () => {
                         weight={2}
                     />
                 ))}
+
+                {route.length > 0 && routeFloor === currentFloor && <Polyline positions={route} color="red"/>}
             </MapContainer>
 
             <div className={classes.routeButtonContainer}>
@@ -397,7 +419,7 @@ const Map = () => {
             {modalMessage && <MyModal message={modalMessage} onClose={handleModalClose}/>}
 
             {showRouteModal && (
-                <RouteModal onClose={handleRouteModalClose} onBuildRoute={handleBuildRoute}/>
+                <RouteModal onClose={handleRouteModalClose} onBuildRoute={handleBuildRoute} onClearRoute={clearRoute}/>
             )}
         </>
     );

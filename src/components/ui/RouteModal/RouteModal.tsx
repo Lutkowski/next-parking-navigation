@@ -1,40 +1,49 @@
-// RouteModal.tsx
-import React, {useState} from 'react';
-import classes from './routemodal.module.scss';
-import MyButton from "@/components/ui/myButton/MyButton";
+import React, { useState } from 'react';
+import MyButton from '@/components/ui/myButton/MyButton';
+import classes from './routeModal.module.scss';
 
 interface RouteModalProps {
     onClose: () => void;
-    onBuildRoute: (startShop: string, endShop: string) => void;
+    onBuildRoute: (startShopName: string, endShopName: string) => void;
+    onClearRoute: () => void; // Добавляем новый пропс для очистки маршрута
 }
 
-const RouteModal: React.FC<RouteModalProps> = ({onClose, onBuildRoute}) => {
-    const [startShop, setStartShop] = useState('');
-    const [endShop, setEndShop] = useState('');
+const RouteModal: React.FC<RouteModalProps> = ({ onClose, onBuildRoute, onClearRoute }) => {
+    const [startShopName, setStartShopName] = useState('');
+    const [endShopName, setEndShopName] = useState('');
 
-    const handleBuildRoute = () => {
-        onBuildRoute(startShop, endShop);
-    }
+    const handleBuildClick = () => {
+        onBuildRoute(startShopName, endShopName);
+    };
+
+    const handleClearClick = () => {
+        onClearRoute();
+        onClose();
+    };
 
     return (
         <div className={classes.modalOverlay}>
             <div className={classes.modal}>
                 <div className={classes.modalContent}>
+                    <h2>Построение маршрута</h2>
                     <input
                         type="text"
-                        placeholder="Магазин отправления"
-                        value={startShop}
-                        onChange={(e) => setStartShop(e.target.value)}
+                        placeholder="Начальный магазин"
+                        value={startShopName}
+                        onChange={(e) => setStartShopName(e.target.value)}
                         className={classes.input}
                     />
                     <input
                         type="text"
-                        placeholder="Магазин назначения"
-                        value={endShop}
-                        onChange={(e) => setEndShop(e.target.value)}
+                        placeholder="Конечный магазин"
+                        value={endShopName}
+                        onChange={(e) => setEndShopName(e.target.value)}
                         className={classes.input}
                     />
-                    <MyButton onClick={handleBuildRoute}>Построить</MyButton>
+                    <div className={classes.buttonGroup}>
+                        <MyButton onClick={handleBuildClick}>Построить</MyButton>
+                        <MyButton onClick={handleClearClick}>Очистить</MyButton>
+                    </div>
                     <MyButton onClick={onClose}>Закрыть</MyButton>
                 </div>
             </div>
