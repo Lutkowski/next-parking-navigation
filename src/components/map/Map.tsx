@@ -3,7 +3,8 @@
 import React, {useEffect, useState} from 'react';
 import 'leaflet/dist/leaflet.css';
 import {MapContainer, Marker, Pane, Polygon, Polyline, Popup, TileLayer} from 'react-leaflet';
-import {Icon, LatLngExpression} from 'leaflet';
+import {Icon, LatLngExpression, Polyline as LeafletPolyline} from 'leaflet';
+import 'leaflet-arrowheads'; // Импортируем библиотеку для стрелок
 import {FacilityType} from '@/models/Facility';
 import {useMapData} from '@/hooks/useMapData';
 import Zoom from '@/components/ui/zoom/Zoom';
@@ -18,7 +19,8 @@ import BookingModal from '@/components/ui/BookingModal/BookingModal';
 import MyModal from '@/components/ui/myModal/MyModal';
 import RouteModal from '@/components/ui/RouteModal/RouteModal';
 import Image from 'next/image';
-import {useFloor} from "@/contexts/FloorContext"; // Импортируем контекст этажа
+import {useFloor} from "@/contexts/FloorContext";
+import ArrowedPolyline from "@/components/arrowedPolyline/ArrowedPolyline"; // Импортируем контекст этажа
 
 const Map = () => {
     const initialPosition: [number, number] = [56.306470, 44.075805];
@@ -254,7 +256,7 @@ const Map = () => {
         if (response.ok) {
             const data = await response.json();
             setRoute(data.coordinates);
-            setRouteFloor(data.floor); // Установим этаж для маршрута
+            setRouteFloor(data.floor);
         }
         setShowRouteModal(false);
     };
@@ -263,12 +265,6 @@ const Map = () => {
         setRoute([]);
         setRouteFloor(null);
     };
-
-    useEffect(() => {
-        if (route.length > 0) {
-            console.log('Route coordinates:', route);
-        }
-    }, [route]);
 
     return (
         <>
@@ -397,7 +393,7 @@ const Map = () => {
                     />
                 ))}
 
-                {route.length > 0 && routeFloor === currentFloor && <Polyline positions={route} color="red"/>}
+                {route.length > 0 && routeFloor === currentFloor && <ArrowedPolyline positions={route} color="red"/>}
             </MapContainer>
 
             <div className={classes.routeButtonContainer}>
