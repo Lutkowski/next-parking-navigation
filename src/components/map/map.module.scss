@@ -19,3 +19,20 @@
   align-items: center;
   pointer-events: none;
 }
+
+.routeButtonContainer {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+.routeButton {
+  background-color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}

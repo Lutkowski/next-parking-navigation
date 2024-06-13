@@ -1,34 +1,35 @@
 'use client'
 
-import 'leaflet/dist/leaflet.css'
+import React, {useEffect, useState} from 'react';
+import 'leaflet/dist/leaflet.css';
 import {MapContainer, Marker, Pane, Polygon, Polyline, Popup, TileLayer} from 'react-leaflet';
-import {Icon, LatLngExpression} from "leaflet";
-import {FacilityType} from "@/models/Facility";
-import {useMapData} from "@/hooks/useMapData";
-import Zoom from "@/components/ui/zoom/Zoom";
-import Sidebar from "@/components/ui/sidebar/Sidebar";
-import {useEffect, useState} from "react";
-import Search from "@/components/ui/search/Search";
-import {ShopCategory} from "@/models/Shop";
-import Filter from "@/components/ui/filter/Filter";
-import classes from "./map.module.scss";
-import {IParkingPlace} from "@/models/ParkingPlace";
-import {getSession} from "next-auth/react";
-import BookingModal from "@/components/ui/BookingModal/BookingModal";
-import MyModal from "@/components/ui/myModal/MyModal";
+import {Icon, LatLngExpression} from 'leaflet';
+import {FacilityType} from '@/models/Facility';
+import {useMapData} from '@/hooks/useMapData';
+import Zoom from '@/components/ui/zoom/Zoom';
+import Sidebar from '@/components/ui/sidebar/Sidebar';
+import Search from '@/components/ui/search/Search';
+import {ShopCategory} from '@/models/Shop';
+import Filter from '@/components/ui/filter/Filter';
+import classes from './map.module.scss';
+import {IParkingPlace} from '@/models/ParkingPlace';
+import {getSession} from 'next-auth/react';
+import BookingModal from '@/components/ui/BookingModal/BookingModal';
+import MyModal from '@/components/ui/myModal/MyModal';
+import RouteModal from '@/components/ui/RouteModal/RouteModal';
+import Image from 'next/image';
 
 const Map = () => {
-
     const initialPosition: [number, number] = [56.306470, 44.075805];
-    const [foundShop, setFoundShop] = useState<string | null>(null)
+    const [foundShop, setFoundShop] = useState<string | null>(null);
     const {parkingPlaces, shops, voids, placements, borders, facilities} = useMapData();
-    const [filter, setFilter] = useState<string | null>(null)
+    const [filter, setFilter] = useState<string | null>(null);
     const [selectedPlace, setSelectedPlace] = useState<any>(null);
     const [showModal, setShowModal] = useState(false);
     const [places, setPlaces] = useState(parkingPlaces);
     const [modalMessage, setModalMessage] = useState<string | null>(null);
     const [userEmail, setUserEmail] = useState<string | null>(null);
-
+    const [showRouteModal, setShowRouteModal] = useState(false);
 
     useEffect(() => {
         const fetchSession = async () => {
@@ -74,9 +75,9 @@ const Map = () => {
             case ShopCategory.Pharmacy:
                 return 'rgba(0, 128, 0, 0.5)';
             default:
-                return 'rgba(255, 165, 0, 0.5)'
+                return 'rgba(255, 165, 0, 0.5)';
         }
-    }
+    };
 
     const getColorByStatus = (place: IParkingPlace) => {
         if (place.bookingEnd) {
@@ -103,18 +104,15 @@ const Map = () => {
 
             if (now <= bookingEnd) {
                 if (place.userEmail === userEmail) {
-                    // Наше забронированное место
                     setSelectedPlace(place);
                     setShowModal(true);
                 } else {
-                    // Забронированное место другого пользователя
                     setModalMessage('Данное место уже забронировано.');
                 }
                 return;
             }
         }
 
-        // Свободное место
         setSelectedPlace(place);
         setShowModal(true);
     };
@@ -190,7 +188,6 @@ const Map = () => {
         }
     };
 
-
     const getCenter = (coordinates: [number, number][]) => {
         const lat = coordinates.reduce((acc, coord) => acc + coord[0], 0) / coordinates.length;
         const lng = coordinates.reduce((acc, coord) => acc + coord[1], 0) / coordinates.length;
@@ -237,9 +234,21 @@ const Map = () => {
         return Math.abs(area / 2);
     };
 
-
     const filteredShops = filter ? shops.filter(shop => shop.category === filter) : shops;
 
+    const handleOpenRouteModal = () => {
+        setShowRouteModal(true);
+    };
+
+    const handleRouteModalClose = () => {
+        setShowRouteModal(false);
+    };
+
+    const handleBuildRoute = (startShop: string, endShop: string) => {
+        // Логика построения маршрута
+        console.log(`Маршрут от ${startShop} до ${endShop}`);
+        setShowRouteModal(false);
+    };
 
     return (
         <>
@@ -292,7 +301,6 @@ const Map = () => {
                 <Pane name="labels" style={{zIndex: 500}}>
                     {filteredShops.map((shop) => {
                         const area = calculatePolygonArea(shop.coordinates);
-                        console.log(`${shop.slug}:${area}`)
                         if (area < 9.697623681859113e-8) return null;
 
                         const escapedSlug = escapeHtml(shop.slug);
@@ -334,7 +342,6 @@ const Map = () => {
                     </Polygon>
                 ))}
 
-
                 {voids.map((path) => (
                     <Polygon
                         key={path._id}
@@ -369,8 +376,13 @@ const Map = () => {
                         weight={2}
                     />
                 ))}
-
             </MapContainer>
+
+            <div className={classes.routeButtonContainer}>
+                <button className={classes.routeButton} onClick={handleOpenRouteModal}>
+                    <Image src="/route.svg" alt="Маршрут" width={30} height={30}/>
+                </button>
+            </div>
 
             {showModal && selectedPlace && (
                 <BookingModal
@@ -383,8 +395,12 @@ const Map = () => {
             )}
 
             {modalMessage && <MyModal message={modalMessage} onClose={handleModalClose}/>}
-        </>
-    )
-}
 
-export default Map
+            {showRouteModal && (
+                <RouteModal onClose={handleRouteModalClose} onBuildRoute={handleBuildRoute}/>
+            )}
+        </>
+    );
+};
+
+export default Map;
