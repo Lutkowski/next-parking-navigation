@@ -1,6 +1,6 @@
 .header {
   display: flex;
-  height: 10vh;
+  height: calc(10vh - 2px);;
   width: 100%;
   background: var(--second-color);
   color: var(--first-color);

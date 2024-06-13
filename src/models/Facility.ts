@@ -12,6 +12,8 @@ export interface IFacility extends Omit<ITRKObject, 'coordinates'> {
     coordinate: [number, number];
     slug?: string;
     type: FacilityType;
+    topFloor?: number;
+    bottomFloor?: number;
 }
 
 const facilitySchema: Schema = new Schema({
@@ -30,6 +32,13 @@ const facilitySchema: Schema = new Schema({
     slug: {
         type: String,
     },
+    topFloor: {
+        type: Number,
+    },
+    bottomFloor: {
+        type: Number,
+    },
+
     type: {
         type: String,
         enum: Object.values(FacilityType),
