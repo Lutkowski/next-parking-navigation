@@ -2,7 +2,7 @@
 
 import React, {useEffect, useState} from 'react';
 import 'leaflet/dist/leaflet.css';
-import {MapContainer, Marker, Pane, Polygon, Polyline, Popup, TileLayer} from 'react-leaflet';
+import {MapContainer, Marker, Pane, Polygon, Popup, TileLayer} from 'react-leaflet';
 import {Icon, LatLngExpression} from 'leaflet';
 import 'leaflet-arrowheads'
 import {useMapData} from '@/lib/hooks/useMapData';
@@ -21,15 +21,14 @@ import {useFloor} from "@/contexts/FloorContext";
 import ArrowedPolyline from "@/components/arrowedPolyline/ArrowedPolyline";
 import calculatePolygonArea from "@/lib/utils/calculatePolygonArea";
 import getShopColor from "@/lib/utils/getShopColor";
-import customIcons from "@/lib/constants/icons";
-import getParkingColor from "@/lib/utils/getParkingColor";
 import getCenter from "@/lib/utils/getObjectCenter";
 import sanitizeHtmlString from "@/lib/utils/escapeHTML";
 import splitTextByLineLength from "@/lib/utils/wrapText";
 import ParkingPlaces from "@/components/map_elements/ParkingPlaces";
 import Voids from "@/components/map_elements/Voids";
 import Placements from "@/components/map_elements/Placements";
-import Facilties from "@/components/map_elements/Facilties";
+import Facilities from "@/components/map_elements/Facilities";
+import Borders from "@/components/map_elements/Borders";
 
 const Map = () => {
     const initialPosition: [number, number] = [56.306470, 44.075805];
@@ -267,16 +266,9 @@ const Map = () => {
 
                 <Placements placements={placements}></Placements>
 
-                <Facilties facilities={facilities}></Facilties>
+                <Facilities facilities={facilities}></Facilities>
 
-                {borders.map((border) => (
-                    <Polyline
-                        key={border._id}
-                        positions={border.coordinates as LatLngExpression[]}
-                        color={border.color}
-                        weight={2}
-                    />
-                ))}
+                <Borders borders={borders}></Borders>
 
                 {route.length > 0 && routeFloor === currentFloor && <ArrowedPolyline positions={route} color="red"/>}
             </MapContainer>

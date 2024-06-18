@@ -7,7 +7,7 @@ interface FacilitiesProps {
     facilities: IFacility[],
 }
 
-const Facilties: React.FC<FacilitiesProps> = ({facilities}) => {
+const Facilities: React.FC<FacilitiesProps> = ({facilities}) => {
     return (
         <>
             {facilities.map((facility) => (
@@ -23,4 +23,4 @@ const Facilties: React.FC<FacilitiesProps> = ({facilities}) => {
     );
 };
 
-export default Facilties;
+export default Facilities;
