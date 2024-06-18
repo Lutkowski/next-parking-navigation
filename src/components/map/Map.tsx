@@ -2,8 +2,8 @@
 
 import React, {useEffect, useState} from 'react';
 import 'leaflet/dist/leaflet.css';
-import {MapContainer, Marker, Pane, Polygon, Popup, TileLayer} from 'react-leaflet';
-import {Icon, LatLngExpression} from 'leaflet';
+import {MapContainer, TileLayer} from 'react-leaflet';
+import {LatLngExpression} from 'leaflet';
 import 'leaflet-arrowheads'
 import {useMapData} from '@/lib/hooks/useMapData';
 import Zoom from '@/components/ui/zoom/Zoom';
@@ -19,16 +19,12 @@ import RouteModal from '@/components/ui/RouteModal/RouteModal';
 import Image from 'next/image';
 import {useFloor} from "@/contexts/FloorContext";
 import ArrowedPolyline from "@/components/arrowedPolyline/ArrowedPolyline";
-import calculatePolygonArea from "@/lib/utils/calculatePolygonArea";
-import getShopColor from "@/lib/utils/getShopColor";
-import getCenter from "@/lib/utils/getObjectCenter";
-import sanitizeHtmlString from "@/lib/utils/escapeHTML";
-import splitTextByLineLength from "@/lib/utils/wrapText";
 import ParkingPlaces from "@/components/map_elements/ParkingPlaces";
 import Voids from "@/components/map_elements/Voids";
 import Placements from "@/components/map_elements/Placements";
 import Facilities from "@/components/map_elements/Facilities";
 import Borders from "@/components/map_elements/Borders";
+import Shops from "@/components/map_elements/Shops/Shops";
 
 const Map = () => {
     const initialPosition: [number, number] = [56.306470, 44.075805];
@@ -203,64 +199,7 @@ const Map = () => {
 
                 <ParkingPlaces places={parkingPlaces} userEmail={userEmail} onPlaceClick={handlePlaceClick}/>
 
-                {filteredShops.map((shop) => (
-                    <Polygon
-                        key={shop._id}
-                        positions={shop.coordinates as LatLngExpression[]}
-                        pathOptions={{
-                            color: foundShop === shop._id ? 'red' : getShopColor(shop.category),
-                            weight: 3,
-                            fillColor: getShopColor(shop.category),
-                        }}
-                        className='shops'
-                    >
-                        <Popup>{shop.slug}</Popup>
-                    </Polygon>
-                ))}
-
-                <Pane name="labels" style={{zIndex: 500}}>
-                    {filteredShops.map((shop) => {
-                        const area = calculatePolygonArea(shop.coordinates);
-                        if (area < 9.697623681859113e-8) return null;
-
-                        const sanitizedSlug = sanitizeHtmlString(shop.slug);
-                        const lines = splitTextByLineLength(sanitizedSlug, 10);
-                        const svgText = lines.map((line, index) => `<tspan x="50%" dy="${index === 0 ? 0 : 15}">${line}</tspan>`).join('');
-
-                        return (
-                            <Marker
-                                key={shop._id}
-                                position={getCenter(shop.coordinates)}
-                                icon={new Icon({
-                                    iconUrl: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" width="100" height="50">
-                            <rect  width="100" height="50" fill="rgba(255, 255, 255, 0.0)" rx="5" ry="5"/>
-                            <text  font-weight="700" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="10" fill="black">${svgText}</text>
-                        </svg>
-                    `),
-                                    iconSize: [100, 50],
-                                    iconAnchor: [50, 25],
-                                    className: classes.shopLabel
-                                })}
-                            />
-                        );
-                    })}
-                </Pane>
-
-                {filteredShops.map((shop) => (
-                    <Polygon
-                        key={shop._id}
-                        positions={shop.coordinates as LatLngExpression[]}
-                        pathOptions={{
-                            color: foundShop === shop._id ? 'red' : getShopColor(shop.category),
-                            weight: 3,
-                            fillColor: getShopColor(shop.category),
-                        }}
-                        className='shops'
-                    >
-                        <Popup>{shop.slug}</Popup>
-                    </Polygon>
-                ))}
+                <Shops shops={filteredShops} foundShop={foundShop}></Shops>
 
                 <Voids voids={voids}></Voids>
 
