@@ -29,6 +29,7 @@ import splitTextByLineLength from "@/lib/utils/wrapText";
 import ParkingPlaces from "@/components/map_elements/ParkingPlaces";
 import Voids from "@/components/map_elements/Voids";
 import Placements from "@/components/map_elements/Placements";
+import Facilties from "@/components/map_elements/Facilties";
 
 const Map = () => {
     const initialPosition: [number, number] = [56.306470, 44.075805];
@@ -266,15 +267,7 @@ const Map = () => {
 
                 <Placements placements={placements}></Placements>
 
-                {facilities.map((facility) => (
-                    <Marker
-                        key={facility._id}
-                        icon={customIcons[facility.type]}
-                        position={facility.coordinate as LatLngExpression}
-                    >
-                        <Popup>{facility.type}</Popup>
-                    </Marker>
-                ))}
+                <Facilties facilities={facilities}></Facilties>
 
                 {borders.map((border) => (
                     <Polyline
