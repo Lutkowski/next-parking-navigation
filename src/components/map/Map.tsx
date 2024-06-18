@@ -26,6 +26,7 @@ import getParkingColor from "@/lib/utils/getParkingColor";
 import getCenter from "@/lib/utils/getObjectCenter";
 import sanitizeHtmlString from "@/lib/utils/escapeHTML";
 import splitTextByLineLength from "@/lib/utils/wrapText";
+import ParkingPlaces from "@/components/map_elements/ParkingPlaces";
 
 const Map = () => {
     const initialPosition: [number, number] = [56.306470, 44.075805];
@@ -198,17 +199,7 @@ const Map = () => {
 
                 <Zoom/>
 
-                {places.map((place) => (
-                    <Polygon
-                        key={place._id}
-                        positions={place.coordinates as LatLngExpression[]}
-                        color={getParkingColor(place, userEmail)}
-                        className='cars'
-                        eventHandlers={{
-                            click: () => handlePlaceClick(place),
-                        }}
-                    />
-                ))}
+                <ParkingPlaces places={parkingPlaces} userEmail={userEmail} onPlaceClick={handlePlaceClick}/>
 
                 {filteredShops.map((shop) => (
                     <Polygon
@@ -313,23 +304,30 @@ const Map = () => {
                 </button>
             </div>
 
-            {showModal && selectedPlace && (
-                <BookingModal
-                    place={selectedPlace}
-                    onClose={handleModalClose}
-                    onBook={handleBooking}
-                    onCancel={handleCancelBooking}
-                    userEmail={userEmail}
-                />
-            )}
+    {
+        showModal && selectedPlace && (
+            <BookingModal
+                place={selectedPlace}
+                onClose={handleModalClose}
+                onBook={handleBooking}
+                onCancel={handleCancelBooking}
+                userEmail={userEmail}
+            />
+        )
+    }
 
-            {modalMessage && <MyModal message={modalMessage} onClose={handleModalClose}/>}
+    {
+        modalMessage && <MyModal message={modalMessage} onClose={handleModalClose}/>
+    }
 
-            {showRouteModal && (
-                <RouteModal onClose={handleRouteModalClose} onBuildRoute={handleBuildRoute} onClearRoute={clearRoute}/>
-            )}
+    {
+        showRouteModal && (
+            <RouteModal onClose={handleRouteModalClose} onBuildRoute={handleBuildRoute} onClearRoute={clearRoute}/>
+        )
+    }
         </>
-    );
+    )
+        ;
 };
 
 export default Map;
