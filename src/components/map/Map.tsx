@@ -3,14 +3,12 @@
 import React, {useEffect, useState} from 'react';
 import 'leaflet/dist/leaflet.css';
 import {MapContainer, Marker, Pane, Polygon, Polyline, Popup, TileLayer} from 'react-leaflet';
-import {Icon, LatLngExpression, Polyline as LeafletPolyline} from 'leaflet';
-import 'leaflet-arrowheads'; // Импортируем библиотеку для стрелок
-import {FacilityType} from '@/models/Facility';
-import {useMapData} from '@/hooks/useMapData';
+import {Icon, LatLngExpression} from 'leaflet';
+import 'leaflet-arrowheads'
+import {useMapData} from '@/lib/hooks/useMapData';
 import Zoom from '@/components/ui/zoom/Zoom';
 import Sidebar from '@/components/ui/sidebar/Sidebar';
 import Search from '@/components/ui/search/Search';
-import {ShopCategory} from '@/models/Shop';
 import Filter from '@/components/ui/filter/Filter';
 import classes from './map.module.scss';
 import {IParkingPlace} from '@/models/ParkingPlace';
@@ -20,7 +18,14 @@ import MyModal from '@/components/ui/myModal/MyModal';
 import RouteModal from '@/components/ui/RouteModal/RouteModal';
 import Image from 'next/image';
 import {useFloor} from "@/contexts/FloorContext";
-import ArrowedPolyline from "@/components/arrowedPolyline/ArrowedPolyline"; // Импортируем контекст этажа
+import ArrowedPolyline from "@/components/arrowedPolyline/ArrowedPolyline";
+import calculatePolygonArea from "@/lib/utils/calculatePolygonArea";
+import getShopColor from "@/lib/utils/getShopColor";
+import customIcons from "@/lib/constants/icons";
+import getParkingColor from "@/lib/utils/getParkingColor";
+import getCenter from "@/lib/utils/getObjectCenter";
+import sanitizeHtmlString from "@/lib/utils/escapeHTML";
+import splitTextByLineLength from "@/lib/utils/wrapText";
 
 const Map = () => {
     const initialPosition: [number, number] = [56.306470, 44.075805];
@@ -36,7 +41,7 @@ const Map = () => {
     const [route, setRoute] = useState<LatLngExpression[]>([]);
     const [routeFloor, setRouteFloor] = useState<number | null>(null); // Добавляем состояние для этажа маршрута
 
-    const {currentFloor} = useFloor(); // Используем контекст этажа
+    const {currentFloor} = useFloor();
 
     useEffect(() => {
         const fetchSession = async () => {
@@ -48,55 +53,6 @@ const Map = () => {
         setPlaces(parkingPlaces);
     }, [parkingPlaces]);
 
-    const customIcons: { [key in FacilityType]: Icon } = {
-        [FacilityType.Elevator]: new Icon({
-            iconUrl: '/elevator.svg',
-            iconSize: [30, 30],
-            iconAnchor: [12, 12],
-        }),
-        [FacilityType.EscalatorUp]: new Icon({
-            iconUrl: '/escalator_up.svg',
-            iconSize: [30, 30],
-            iconAnchor: [12, 12],
-        }),
-        [FacilityType.EscalatorDown]: new Icon({
-            iconUrl: '/escalator_down.svg',
-            iconSize: [30, 30],
-            iconAnchor: [12, 12],
-        }),
-        [FacilityType.Entrance]: new Icon({
-            iconUrl: '/entrance.svg',
-            iconSize: [30, 30],
-            iconAnchor: [12, 12],
-        }),
-    };
-
-    const getColorByCategory = (category: ShopCategory) => {
-        switch (category) {
-            case ShopCategory.Beauty:
-                return 'rgba(255, 192, 203, 0.5)';
-            case ShopCategory.Fashion:
-                return 'rgba(0, 0, 255, 0.5)';
-            case ShopCategory.Food:
-                return 'rgba(255, 165, 0, 0.5)';
-            case ShopCategory.Pharmacy:
-                return 'rgba(0, 128, 0, 0.5)';
-            default:
-                return 'rgba(255, 165, 0, 0.5)';
-        }
-    };
-
-    const getColorByStatus = (place: IParkingPlace) => {
-        if (place.bookingEnd) {
-            const now = new Date();
-            const bookingEnd = new Date(place.bookingEnd);
-
-            if (now <= bookingEnd) {
-                return place.userEmail === userEmail ? 'yellow' : 'red';
-            }
-        }
-        return 'green';
-    };
 
     const handlePlaceClick = async (place: IParkingPlace) => {
         const session = await getSession();
@@ -195,51 +151,6 @@ const Map = () => {
         }
     };
 
-    const getCenter = (coordinates: [number, number][]) => {
-        const lat = coordinates.reduce((acc, coord) => acc + coord[0], 0) / coordinates.length;
-        const lng = coordinates.reduce((acc, coord) => acc + coord[1], 0) / coordinates.length;
-        return [lat, lng] as LatLngExpression;
-    };
-
-    const escapeHtml = (unsafe: string) => {
-        return unsafe
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    };
-
-    const wrapText = (text: string, maxLineLength: number) => {
-        const words = text.split(' ');
-        let lines = [];
-        let currentLine = '';
-
-        words.forEach(word => {
-            if (currentLine.length + word.length <= maxLineLength) {
-                currentLine += word + ' ';
-            } else {
-                lines.push(currentLine.trim());
-                currentLine = word + ' ';
-            }
-        });
-
-        lines.push(currentLine.trim());
-        return lines;
-    };
-
-    const calculatePolygonArea = (coordinates: [number, number][]) => {
-        let area = 0;
-        const numPoints = coordinates.length;
-
-        for (let i = 0; i < numPoints; i++) {
-            const [x1, y1] = coordinates[i];
-            const [x2, y2] = coordinates[(i + 1) % numPoints];
-            area += x1 * y2 - x2 * y1;
-        }
-
-        return Math.abs(area / 2);
-    };
 
     const filteredShops = filter ? shops.filter(shop => shop.category === filter) : shops;
 
@@ -291,7 +202,7 @@ const Map = () => {
                     <Polygon
                         key={place._id}
                         positions={place.coordinates as LatLngExpression[]}
-                        color={getColorByStatus(place)}
+                        color={getParkingColor(place, userEmail)}
                         className='cars'
                         eventHandlers={{
                             click: () => handlePlaceClick(place),
@@ -304,9 +215,9 @@ const Map = () => {
                         key={shop._id}
                         positions={shop.coordinates as LatLngExpression[]}
                         pathOptions={{
-                            color: foundShop === shop._id ? 'red' : getColorByCategory(shop.category),
+                            color: foundShop === shop._id ? 'red' : getShopColor(shop.category),
                             weight: 3,
-                            fillColor: getColorByCategory(shop.category),
+                            fillColor: getShopColor(shop.category),
                         }}
                         className='shops'
                     >
@@ -319,8 +230,8 @@ const Map = () => {
                         const area = calculatePolygonArea(shop.coordinates);
                         if (area < 9.697623681859113e-8) return null;
 
-                        const escapedSlug = escapeHtml(shop.slug);
-                        const lines = wrapText(escapedSlug, 10);
+                        const sanitizedSlug = sanitizeHtmlString(shop.slug);
+                        const lines = splitTextByLineLength(sanitizedSlug, 10);
                         const svgText = lines.map((line, index) => `<tspan x="50%" dy="${index === 0 ? 0 : 15}">${line}</tspan>`).join('');
 
                         return (
@@ -348,9 +259,9 @@ const Map = () => {
                         key={shop._id}
                         positions={shop.coordinates as LatLngExpression[]}
                         pathOptions={{
-                            color: foundShop === shop._id ? 'red' : getColorByCategory(shop.category),
+                            color: foundShop === shop._id ? 'red' : getShopColor(shop.category),
                             weight: 3,
-                            fillColor: getColorByCategory(shop.category),
+                            fillColor: getShopColor(shop.category),
                         }}
                         className='shops'
                     >

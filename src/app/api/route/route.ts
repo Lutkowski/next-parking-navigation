@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { dijkstraUndirected, getPath } from '@/lib/dijkstra';
-import { graph3, graphData3 } from '@/lib/graphs/graph3';
-import dbConnect from "@/lib/dbConnect";
+import { dijkstraUndirected, getPath } from '@/lib/utils/dijkstra';
+import { graph3, graphData3 } from '@/lib/constants/graphs/graph3';
+import dbConnect from "@/lib/utils/dbConnect";
 import Shop from "@/models/Shop";
 
 const findShopIdByName = async (name: string): Promise<string | null> => {
