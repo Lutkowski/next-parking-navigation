@@ -1,23 +1,23 @@
 import {Polygon} from "react-leaflet";
 import {LatLngExpression} from "leaflet";
-import {IVoid} from "@/models/Void";
+import {IPlacement} from "@/models/Placement";
 
-interface VoidsProps {
-    voids: IVoid[]
+interface PlacementsProps {
+    placements: IPlacement[],
 }
 
-const Voids: React.FC<VoidsProps> = ({voids}) => {
+const Placements: React.FC<PlacementsProps> = ({placements}) => {
     return (
         <>
-            {voids.map((path) => (
+            {placements.map((path) => (
                 <Polygon
                     key={path._id}
                     positions={path.coordinates as LatLngExpression[]}
-                    color='rgba(127, 127, 127, 0.4)'
+                    color='rgba(127, 127, 127, 1)'
                 />
             ))}
         </>
     );
 };
 
-export default Voids;
+export default Placements;

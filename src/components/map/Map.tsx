@@ -27,6 +27,8 @@ import getCenter from "@/lib/utils/getObjectCenter";
 import sanitizeHtmlString from "@/lib/utils/escapeHTML";
 import splitTextByLineLength from "@/lib/utils/wrapText";
 import ParkingPlaces from "@/components/map_elements/ParkingPlaces";
+import Voids from "@/components/map_elements/Voids";
+import Placements from "@/components/map_elements/Placements";
 
 const Map = () => {
     const initialPosition: [number, number] = [56.306470, 44.075805];
@@ -260,21 +262,9 @@ const Map = () => {
                     </Polygon>
                 ))}
 
-                {voids.map((path) => (
-                    <Polygon
-                        key={path._id}
-                        positions={path.coordinates as LatLngExpression[]}
-                        color='rgba(127, 127, 127, 0.4)'
-                    />
-                ))}
+                <Voids voids={voids}></Voids>
 
-                {placements.map((path) => (
-                    <Polygon
-                        key={path._id}
-                        positions={path.coordinates as LatLngExpression[]}
-                        color='rgba(127, 127, 127, 1)'
-                    />
-                ))}
+                <Placements placements={placements}></Placements>
 
                 {facilities.map((facility) => (
                     <Marker
@@ -304,27 +294,28 @@ const Map = () => {
                 </button>
             </div>
 
-    {
-        showModal && selectedPlace && (
-            <BookingModal
-                place={selectedPlace}
-                onClose={handleModalClose}
-                onBook={handleBooking}
-                onCancel={handleCancelBooking}
-                userEmail={userEmail}
-            />
-        )
-    }
+            {
+                showModal && selectedPlace && (
+                    <BookingModal
+                        place={selectedPlace}
+                        onClose={handleModalClose}
+                        onBook={handleBooking}
+                        onCancel={handleCancelBooking}
+                        userEmail={userEmail}
+                    />
+                )
+            }
 
-    {
-        modalMessage && <MyModal message={modalMessage} onClose={handleModalClose}/>
-    }
+            {
+                modalMessage && <MyModal message={modalMessage} onClose={handleModalClose}/>
+            }
 
-    {
-        showRouteModal && (
-            <RouteModal onClose={handleRouteModalClose} onBuildRoute={handleBuildRoute} onClearRoute={clearRoute}/>
-        )
-    }
+            {
+                showRouteModal && (
+                    <RouteModal onClose={handleRouteModalClose} onBuildRoute={handleBuildRoute}
+                                onClearRoute={clearRoute}/>
+                )
+            }
         </>
     )
         ;
