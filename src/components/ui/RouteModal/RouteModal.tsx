@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import MyButton from '@/components/ui/myButton/MyButton';
-import classes from './routeModal.module.scss';
+import classes from './routemodal.module.scss';
 
 interface RouteModalProps {
     onClose: () => void;
     onBuildRoute: (startShopName: string, endShopName: string) => void;
-    onClearRoute: () => void; // Добавляем новый пропс для очистки маршрута
+    onClearRoute: () => void;
 }
 
 const RouteModal: React.FC<RouteModalProps> = ({ onClose, onBuildRoute, onClearRoute }) => {
