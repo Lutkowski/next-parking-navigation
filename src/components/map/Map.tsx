@@ -37,8 +37,10 @@ const Map = () => {
     const [modalMessage, setModalMessage] = useState<string | null>(null);
     const [userEmail, setUserEmail] = useState<string | null>(null);
     const [showRouteModal, setShowRouteModal] = useState(false);
-    const [route, setRoute] = useState<LatLngExpression[]>([]);
-    const [routeFloor, setRouteFloor] = useState<number | null>(null); // Добавляем состояние для этажа маршрута
+    const [startRoute, setStartRoute] = useState<LatLngExpression[]>([]);
+    const [startRouteFloor, setStartRouteFloor] = useState<number | null>(null); // Добавляем состояние для этажа маршрута
+    const [endRoute, setEndRoute] = useState<LatLngExpression[]>([]);
+    const [endRouteFloor, setEndRouteFloor] = useState<number | null>(null);
 
     const {currentFloor} = useFloor();
 
@@ -162,18 +164,28 @@ const Map = () => {
     };
 
     const handleBuildRoute = async (startShopName: string, endShopName: string) => {
+        setStartRoute([]);
+        setStartRouteFloor(null);
+        setEndRoute([]);
+        setEndRouteFloor(null);
         const response = await fetch(`/api/route?startShopName=${encodeURIComponent(startShopName)}&endShopName=${encodeURIComponent(endShopName)}`);
         if (response.ok) {
             const data = await response.json();
-            setRoute(data.coordinates);
-            setRouteFloor(data.floor);
+            setStartRoute(data.startCoordinates);
+            setStartRouteFloor(data.startFloor);
+            if (data.endCoordinates) {
+                setEndRoute(data.endCoordinates);
+                setEndRouteFloor(data.endFloor);
+            }
         }
         setShowRouteModal(false);
     };
 
     const clearRoute = () => {
-        setRoute([]);
-        setRouteFloor(null);
+        setStartRoute([]);
+        setStartRouteFloor(null);
+        setEndRoute([]);
+        setEndRouteFloor(null);
     };
 
     return (
@@ -209,7 +221,10 @@ const Map = () => {
 
                 <Borders borders={borders}></Borders>
 
-                {route.length > 0 && routeFloor === currentFloor && <ArrowedPolyline positions={route} color="red"/>}
+                {startRoute.length > 0 && startRouteFloor === currentFloor &&
+                    <ArrowedPolyline positions={startRoute} color="red"/>}
+                {endRoute.length > 0 && endRouteFloor === currentFloor &&
+                    <ArrowedPolyline positions={endRoute} color="red"/>}
             </MapContainer>
 
             <div className={classes.routeButtonContainer}>
