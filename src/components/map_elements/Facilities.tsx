@@ -16,7 +16,7 @@ const Facilities: React.FC<FacilitiesProps> = ({facilities}) => {
                     icon={customIcons[facility.type]}
                     position={facility.coordinate as LatLngExpression}
                 >
-                    <Popup>{facility.type}</Popup>
+                    <Popup>{facility._id}</Popup>
                 </Marker>
             ))}
         </>

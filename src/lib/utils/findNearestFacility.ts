@@ -15,8 +15,8 @@ const findNearestFacility = (
             facility.floor === startFloor &&
             facility.topFloor !== undefined &&
             facility.bottomFloor !== undefined &&
-            facility.topFloor >= endFloor &&
-            facility.bottomFloor <= startFloor
+            ((startFloor < endFloor && facility.topFloor >= endFloor) ||
+                (startFloor > endFloor && facility.bottomFloor <= endFloor))
         ) {
             const facilityCoord = [Number(facility.coordinate[0]), Number(facility.coordinate[1])];
 
