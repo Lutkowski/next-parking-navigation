@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "graphlib": "^2.1.8",
     "leaflet": "^1.9.4",
+    "leaflet-arrowheads": "^1.4.0",
     "mongoose": "^8.3.5",
     "next": "14.2.3",
     "next-auth": "^4.24.7",
@@ -20,6 +22,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/graphlib": "^2.1.12",
     "@types/leaflet": "^1.9.12",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^20",
