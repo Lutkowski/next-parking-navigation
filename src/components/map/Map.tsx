@@ -173,10 +173,13 @@ const Map = () => {
             const data = await response.json();
             setStartRoute(data.startCoordinates);
             setStartRouteFloor(data.startFloor);
+            setModalMessage(`Маршрут на ${data.startFloor} этаже построен.`)
             if (data.endCoordinates) {
                 setEndRoute(data.endCoordinates);
                 setEndRouteFloor(data.endFloor);
+                setModalMessage(`Маршрут c ${data.startFloor} этажа на ${data.endFloor} построен.`)
             }
+            setShowModal(true)
         }
         setShowRouteModal(false);
     };
