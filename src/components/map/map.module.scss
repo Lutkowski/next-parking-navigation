@@ -37,8 +37,9 @@
   cursor: pointer;
 }
 
-@media screen and (max-height: 800px) {
+@media screen and (max-height: 800px) and (max-width: 480px) {
   .routeButtonContainer {
-    bottom: 5vh;
+    bottom: 10vh;
+    left: 66%;
   }
 }

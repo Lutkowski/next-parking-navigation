@@ -26,8 +26,9 @@
   }
 }
 
-@media screen and (max-height: 800px), screen and (max-width: 480px) {
+@media screen and (max-height: 800px) and (max-width: 480px) {
   .filter{
     max-width: 150px;
+    bottom: 10vh;
   }
 }

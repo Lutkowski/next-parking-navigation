@@ -25,13 +25,20 @@
   width: 50px;
 }
 
+
 .sidebar button.active {
   background: var(--first-color);
   color: var(--second-color);
 }
 
-@media screen and (max-height: 800px) {
+@media screen and (max-height: 800px) and (max-width: 480px) {
   .sidebar {
-    bottom: 5vh;
+    bottom: 10vh;
+  }
+  .sidebar button{
+    width: 40px;
+    padding: 10px;
+    font-family: sans-serif;
+    font-size: 12px;
   }
 }
