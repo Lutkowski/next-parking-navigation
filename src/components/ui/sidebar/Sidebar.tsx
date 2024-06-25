@@ -13,13 +13,19 @@ const Sidebar = () => {
                 {
                     floors.map((floor) => (
                         <li key={floor}>
-                            <button value={floor} onClick={() => setCurrentFloor(floor)}>{floor}</button>
+                            <button
+                                value={floor}
+                                onClick={() => setCurrentFloor(floor)}
+                                className={currentFloor === floor ? classes.active : ''}
+                            >
+                                {floor}
+                            </button>
                         </li>
                     ))
                 }
             </ul>
         </nav>
-    );
+);
 };
 
 export default Sidebar;

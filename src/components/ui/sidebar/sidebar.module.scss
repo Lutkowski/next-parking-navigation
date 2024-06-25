@@ -24,3 +24,8 @@
   cursor: pointer;
   width: 50px;
 }
+
+.sidebar button.active {
+  background: var(--first-color);
+  color: var(--second-color);
+}
