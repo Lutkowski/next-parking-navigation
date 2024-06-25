@@ -29,3 +29,9 @@
   background: var(--first-color);
   color: var(--second-color);
 }
+
+@media screen and (max-height: 800px) {
+  .sidebar {
+    bottom: 5vh;
+  }
+}

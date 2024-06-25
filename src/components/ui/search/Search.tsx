@@ -18,7 +18,7 @@ const Search: React.FC<SearchProps> = ({setFoundShop}) => {
     const map = useMap()
 
     const centerMap = (coordinates: LatLngExpression) => {
-        map.setView(coordinates, 21);
+        map.setView(coordinates, 19);
     }
 
     const handleSearch = async () => {

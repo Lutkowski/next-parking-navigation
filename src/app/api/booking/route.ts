@@ -29,6 +29,11 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({message: 'Parking place not found'}, {status: 404});
         }
 
+        const bookingEndDate = new Date(bookingEnd);
+        if (bookingEndDate <= new Date()) {
+            return NextResponse.json({message: 'Booking end time must be in the future'}, {status: 400});
+        }
+
 
         user.bookedPlace = parkingPlace._id;
         user.bookingEnd = new Date(bookingEnd);

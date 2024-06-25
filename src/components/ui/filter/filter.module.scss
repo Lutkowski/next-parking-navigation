@@ -17,3 +17,17 @@
   border: none;
 
 }
+
+@media screen and (max-height: 800px) {
+  .filter{
+    bottom: 5vh;
+    height: 24px;
+    left: 5px;
+  }
+}
+
+@media screen and (max-height: 800px), screen and (max-width: 480px) {
+  .filter{
+    max-width: 150px;
+  }
+}

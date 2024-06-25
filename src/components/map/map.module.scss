@@ -36,3 +36,9 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   cursor: pointer;
 }
+
+@media screen and (max-height: 800px) {
+  .routeButtonContainer {
+    bottom: 5vh;
+  }
+}
